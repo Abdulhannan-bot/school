@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- {% load school_extras %} -->
+<style>
+  .profile-pic {
+    width: 8rem;
+    height: 8rem;
+    margin: 0 auto;
+    border: 1px solid black;
+    border-radius: 50%;
+  }
+</style>
+
+
+<br>
+<div class="row">
+  <div class="col-md-12">
+    <div class="card card-body">
+      <h3 class="text-center">{{ school.name }}</h3>
+      <hr>
+      <img class="profile-pic" src="">
+    </div>
+  </div>
+</div>
+
+
+<div class="row">
+  <div class="col-md">
+    <div class="card card-body">
+      <h5>Contact Information:</h5>
+      <hr>
+      <p>Email: <a href="">{{ school.email }}</a></p>
+      <p>Phone: {{ school.phone }}</p>
+    </div>
+  </div>
+  <div class="col-md">
+    <div class="card card-body">
+      <h5>Total Students:</h5>
+      <hr>
+      <h1 style="text-align: center; padding:10px">{{ student_count }}</h1>
+    </div>
+  </div>
+  <div class="col-md">
+    <div class="card card-body">
+      <h5>Total Teachers:</h5>
+      <hr>
+      <h1 style="text-align: center; padding:10px">{{ teacher_count }}</h1>
+    </div>
+  </div>
+</div>
+<br>
+<div class="card card-title align-self-center d-flex flex-row justify-content-center">
+  <form method="get">
+    {{ my_filter_student.form }}
+    <button class="btn btn-primary" type="submit">Search</button>
+  </form>
+</div>
+<div class="row">
+  <div class="col-md">
+    <div class="card card-body">
+      <table class="table table-sm">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Grade</th>
+          </tr>
+        </thead>
+        {% for i in page_student.object_list %}
+        <tr>
+          <td><a class="btn btn-sm btn-primary" href="{% url 'school' id=i.id %}">View</a></td>
+          <td>{{ i.name }}</td>
+          <td>{{ i.phone }}</td>
+          <td>{{ i.email }}</td>
+          <td>{{ i.grade }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+      <ul class="pagination justify-content-center">
+        {% if page_student.has_previous %}
+        <li class="page-item"><a href="{% my_url value=1 field_name='page_student' urlencode=request.GET.urlencode %}" class="page-link">First</a></li>
+        <li class="page-item"><a href="{% my_url value=page_student.previous_page_number field_name='page_student' urlencode=request.GET.urlencode %}" class="page-link">Previous</a></li>
+        {% else %}
+        <li class="disabled page-item"><a href="" class="page-link">First</a></li>
+          <li class="disabled page-item"><a href="" class="page-link">Previous</a></li>
+        {% endif %}
+        {% for i in page_student_range|default_if_none:page_student.paginator.get_elided_page_range %}
+          {% if page_student.number == i %}
+            <li class="active page-item"><span class="page-link">{{ i }}</span></li>
+          {% else %}
+            {% if i == page_student.paginator_student.ELLIPSIS %}
+              <li class="page-item"><span class="page-link">{{ i }}</span></li>
+            {% else %}
+              <li class="page-items"><a class="page-link" href="{% my_url value=i field_name='page_student' urlencode=request.GET.urlencode %}">{{ i }}</a></li>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+  
+        {% if page_student.has_next %}
+        <li class="page-item"><a href="{% my_url value=page_student.next_page_number field_name='page_student' urlencode=request.GET.urlencode %}" class="page-link">Next</a></li>
+        <li class="page-item"><a href="{% my_url value=page_student.paginator.num_pages field_name='page_student' urlencode=request.GET.urlencode %}" class="page-link">Last</a></li>
+        {% else %}
+        <li class="disabled page-item"><a href="" class="page-link">Next</a></li>
+        <li class="disabled page-item"><a href="" class="page-link">Last</a></li>
+        {% endif %}
+      </ul>
+    
+      
+    </div>
+  </div>
+  <div class="col-md">
+    <div class="card card-body">
+      <table class="table table-sm orders-table">
+        <tr>
+          <th></th>
+          <th>Name</th>
+          <th>Grade</th>
+        </tr>
+        {% for i in page_teacher.object_list %}
+        <tr>
+          <td><a class="btn btn-sm btn-primary" href="{% url 'school' id=i.id %}">View</a></td>
+          <td>{{ i.name }}</td>
+          <td>{{ i.grade }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+      <ul class="pagination justify-content-center">
+        {% if page_teacher.has_previous %}
+        <li class="page-item"><a href="{% my_url value=1 field_name='page_teacher' urlencode=request.GET.urlencode %}" class="page-link">First</a></li>
+        <li class="page-item"><a href="{% my_url value=page_teacher.previous_page_number field_name='page_teacher' urlencode=request.GET.urlencode %}" class="page-link">Previous</a></li>
+        {% else %}
+        <li class="disabled page-item"><a href="" class="page-link">First</a></li>
+          <li class="disabled page-item"><a href="" class="page-link">Previous</a></li>
+        {% endif %}
+        {% for i in page_teacher_range|default_if_none:page_teacher.paginator.get_elided_page_range %}
+          {% if page_teacher.number == i %}
+            <li class="active page-item"><span class="page-link">{{ i }}</span></li>
+          {% else %}
+            {% if i == page_teacher.paginator.ELLIPSIS %}
+              <li class="page-item"><span class="page-link">{{ i }}</span></li>
+            {% else %}
+              <li class="page-items"><a class="page-link" href="{% my_url value=i field_name='page_teacher' urlencode=request.GET.urlencode %}">{{ i }}</a></li>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+  
+        {% if page_teacher.has_next %}
+        <li class="page-item"><a href="{% my_url value=page_teacher.next_page_number field_name='page_teacher' urlencode=request.GET.urlencode %}" class="page-link">Next</a></li>
+        <li class="page-item"><a href="{% my_url value=page_teacher.paginator.num_pages field_name='page_teacher' urlencode=request.GET.urlencode %}" class="page-link">Last</a></li>
+        {% else %}
+        <li class="disabled page-item"><a href="" class="page-link">Next</a></li>
+        <li class="disabled page-item"><a href="" class="page-link">Last</a></li>
+        {% endif %}
+      </ul>
+    
+      
+    </div>
+  </div>
+</div>
+
+<h2>Non Staff</h2>
+
+<div class="card card-body">
+  <table class="table table-sm orders-table">
+    <tr>
+      <th></th>
+      <th>Name</th>
+      <th>Designation</th>
+      <th>Phone</th>
+      <th>Email</th>
+    </tr>
+    {% for i in nstaff %}
+    <tr>
+      <td><a class="btn btn-sm btn-primary" href="{% url 'school' id=i.id %}">View</a></td>
+      <td>{{ i.name }}</td>
+      <td>{{ i.designation }}</td>
+      <td>{{ i.phone }}</td>
+      <td>{{ i.email }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block content %}
+{% load school_extras %}
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card text-center text-white mb-3" id="students">
+      <div class="card-header">
+        <h5 class="card-title">Total Non Teaching Staff</h5>
+      </div>
+      <div class="card-body">
+        <h5 class="card-title">{{ nstaff_count }}</h5>
+      </div>
+    </div>
+    <div class="card card-body">
+      <br>
+      <form method="get">
+        {{ my_filter.form }}
+        <button class="btn btn-primary" type="submit">Search</button>
+      </form>
+      <br>
+      <table class="table table-sm orders-table">
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">School</th>
+          <th scope="col">Designation</th>
+        </tr>
+        {% for i in page.object_list %}
+        <tbody>
+          <tr>
+            <td>{{ i.name }}</td>
+            <td>{{ i.school }}</td>
+            <td>{{ i.designation }}</td>
+          </tr>
+        </tbody>
+        
+        {% endfor %}
+      </table>
+      <ul class="pagination justify-content-center">
+        {% if page.has_previous %}
+        <li class="page-item"><a href="{% my_url value=1 field_name='page' urlencode=request.GET.urlencode %}" class="page-link">First</a></li>
+          <li class="page-item"><a href="{% my_url value=page.previous_page_number field_name='page' urlencode=request.GET.urlencode %}" class="page-link">Previous</a></li>
+        {% else %}
+        <li class="disabled page-item"><a href="" class="page-link">First</a></li>
+          <li class="disabled page-item"><a href="" class="page-link">Previous</a></li>
+        {% endif %}
+        {% for i in page_range|default_if_none:page.paginator.get_elided_page_range %}
+          {% if page.number == i %}
+            <li class="active page-item"><span class="page-link">{{ i }}</span></li>
+          {% else %}
+            {% if i == page.paginator.ELLIPSIS %}
+              <li class="page-item"><span class="page-link">{{ i }}</span></li>
+            {% else %}
+              <li class="page-items"><a class="page-link" href="{% my_url value=i field_name='page' urlencode=request.GET.urlencode %}">{{ i }}</a></li>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+    
+        {% if page.has_next %}
+        <li class="page-item"><a href="{% my_url value=page.next_page_number field_name='page' urlencode=request.GET.urlencode %}" class="page-link">Next</a></li>
+        <li class="page-item"><a href="{% my_url value=page.paginator.num_pages field_name='page' urlencode=request.GET.urlencode %}" class="page-link">Last</a></li>
+        {% else %}
+        <li class="disabled page-item"><a href="" class="page-link">Next</a></li>
+        <li class="disabled page-item"><a href="" class="page-link">Last</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}

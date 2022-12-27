@@ -1,0 +1,23 @@
+.logo {
+  width: 2rem;
+}
+
+body {
+  background-color: #ebeff5;
+}
+
+#schools {
+  background-color: #4cb4c7;
+}
+
+#students {
+  background-color: #7abecc;
+}
+
+#teachers {
+  background-color: #7CD1C0;
+}
+
+#n-staff {
+  background-color: #7cd19d;
+}
