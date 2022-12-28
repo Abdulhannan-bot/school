@@ -36,7 +36,7 @@ def admin_only(view_func):
         return redirect('school',id = request.user.nonstaff.school.id)
       
       else:
-        return HttpResponse('<p>You are not authorized to use this page</p>')
+        return redirect('login')
         
 
     return wrapper_func

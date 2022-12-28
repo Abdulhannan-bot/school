@@ -1,4 +1,6 @@
+
 {% extends "base.html" %}
+{% load static %}
 {% block aside %}
 {% if admin_check %}
 <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'home' %}" aria-expanded="false"><i class="far fa-lightbulb"></i><span class="hide-menu">Home</span></a></li>
@@ -38,7 +40,7 @@
     <div class="card card-body">
       <h3 class="text-center">{{ school.name }}</h3>
       <hr>
-      <img class="profile-pic" src="{{ request.user.school.profile_pic }}">
+      <img class="profile-pic" src="{{ request.user.school.profile_pic.url }}">
     </div>
   </div>
 </div>

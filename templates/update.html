@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% block aside %}
 <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'school' id=school.id %}" aria-expanded="false"><i class="far fa-lightbulb"></i><span class="hide-menu">Home</span></a></li>
 {% if log == 'student' %}
@@ -13,11 +14,7 @@
 <div class="row">
   <div class="col-md-6">
     <div class="card card-body">
-      {% if log == 'school' %}
       <form action="" method="POST" enctype="multipart/form-data">
-      {% else %}
-      <form action="" method="POST">
-      {% endif %}
         {% csrf_token %}
         {{ form.as_p }}
         <button class="btn-submit" type="submit">Submit</button>

@@ -259,10 +259,10 @@ def update_school(request, id):
   school = School.objects.get(id = id)
   form = UpdateSchoolForm(instance = school)
   if request.method == "POST":
-    form = UpdateSchoolForm(request.POST, instance = school)
+    form = UpdateSchoolForm(request.POST, request.FILES, instance = school)
     if form.is_valid():
       form.save()
-      print(request.user.username)
+      
       return redirect('school', id=id )
   print(f'name - {request.user.groups.all()[0].name}')
   context = {
