@@ -23,7 +23,7 @@ class School(models.Model):
   name = models.CharField(max_length = 50, null = True, blank = True)
   phone = models.CharField(max_length = 20, null=True)
   email = models.CharField(max_length = 50, null=True)
-  profile_pic = models.ImageField(default="", null=True, blank=True)
+  profile_pic = models.ImageField(default="", upload_to = 'media/', null=True, blank=True)
 
   def __str__(self):
     return str(self.name)

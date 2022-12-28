@@ -106,6 +106,7 @@
                     <!-- Right side toggle and nav items -->
                     <!-- ============================================================== -->
                     <ul class="navbar-nav float-right">
+                        <a href="{% url 'logout' %}" class="text-white fw-bold">Logout</a>
                         <!-- ============================================================== -->
                         <!-- Search -->
                         <!-- ============================================================== -->
@@ -113,7 +114,8 @@
                         <!-- ============================================================== -->
                         <!-- User profile and search -->
                         <!-- ============================================================== -->
-                        <li class="nav-item dropdown">
+                        
+                        <!-- <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle waves-effect waves-dark pro-pic" href="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <img src="{% static 'assets/images/users/1.jpg' %}" alt="user" class="rounded-circle" width="31">
                                 <span class="ml-2 user-text font-medium">Steve</span><span class="fas fa-angle-down ml-2 user-text"></span>
@@ -135,7 +137,7 @@
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="javascript:void(0)"><i class="fa fa-power-off mr-1 ml-1"></i> Logout</a>
                             </div>
-                        </li>
+                        </li> -->
                         <!-- ============================================================== -->
                         <!-- User profile and search -->
                         <!-- ============================================================== -->
@@ -147,11 +149,12 @@
             <div class="scroll-sidebar">
                 <nav class="sidebar-nav">
                     <ul id="sidebarnav">
+                        {% block aside %}
                         <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'home' %}" aria-expanded="false"><i class="far fa-lightbulb"></i><span class="hide-menu">Home</span></a></li>
                         <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'students' %}" aria-expanded="false"><i class="far fa-lightbulb"></i><span class="hide-menu">Students</span></a></li>
                         <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'teachers' %}" aria-expanded="false"><i class="far fa-lightbulb"></i><span class="hide-menu">Teachers</span></a></li>
-                        <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'nstaff' %}" aria-expanded="false"><i class="far fa-lightbulb"></i><span class="hide-menu">Non Teaching Staff</span></a></li>
-                    </ul>
+                        <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'nstaff' %}" aria-expanded="false"><i class="far fa-lightbulb"></i><span class="hide-menu">Non Teaching Staff</span></a></li>       
+                        {% endblock %}
                     </ul>
                 </nav>
             </div>

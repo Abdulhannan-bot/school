@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 {% load static %}
-
+{% block aside %}
+<li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'home' %}" aria-expanded="false"><i class="far fa-lightbulb"></i><span class="hide-menu">Home</span></a></li>
+<li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'students' %}" aria-expanded="false"><i class="far fa-lightbulb"></i><span class="hide-menu">Students</span></a></li>
+<li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'teachers' %}" aria-expanded="false"><i class="far fa-lightbulb"></i><span class="hide-menu">Teachers</span></a></li>
+<li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'nstaff' %}" aria-expanded="false"><i class="far fa-lightbulb"></i><span class="hide-menu">Non Teaching Staff</span></a></li>
+{% endblock %}
 {% block content %}
 {% include "status.html" %}
 {% load school_extras %}

@@ -1,4 +1,23 @@
 {% extends "base.html" %}
+{% block aside %}
+{% if admin_check %}
+<li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'home' %}" aria-expanded="false"><i class="far fa-lightbulb"></i><span class="hide-menu">Home</span></a></li>
+<li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'students' %}" aria-expanded="false"><i class="far fa-lightbulb"></i><span class="hide-menu">Students</span></a></li>
+<li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'teachers' %}" aria-expanded="false"><i class="far fa-lightbulb"></i><span class="hide-menu">Teachers</span></a></li>
+<li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'nstaff' %}" aria-expanded="false"><i class="far fa-lightbulb"></i><span class="hide-menu">Non Teaching Staff</span></a></li> 
+{% else %}
+<li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'school' id=school.id %}" aria-expanded="false"><i class="far fa-lightbulb"></i><span class="hide-menu">Home</span></a></li>
+{% if log == 'school' %}
+<li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'update-school' id=id %}" aria-expanded="false"><i class="far fa-lightbulb"></i><span class="hide-menu">Settings</span></a></li>
+{% elif log == 'student' %}
+<li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'update-student' id=id %}" aria-expanded="false"><i class="far fa-lightbulb"></i><span class="hide-menu">Settings</span></a></li>
+{% elif log == 'teacher' %}
+<li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'update-teacher' id=id %}" aria-expanded="false"><i class="far fa-lightbulb"></i><span class="hide-menu">Settings</span></a></li>
+{% elif log == 'non-staff' %}
+<li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'update-nstaff' id=id %}" aria-expanded="false"><i class="far fa-lightbulb"></i><span class="hide-menu">Settings</span></a></li>
+{% endif %}
+{% endif %}
+{% endblock %}
 
 {% block content %}
 <!-- {% load school_extras %} -->
@@ -19,7 +38,7 @@
     <div class="card card-body">
       <h3 class="text-center">{{ school.name }}</h3>
       <hr>
-      <img class="profile-pic" src="">
+      <img class="profile-pic" src="{{ request.user.school.profile_pic }}">
     </div>
   </div>
 </div>
@@ -59,33 +78,34 @@
 <div class="row">
   <div class="col-md">
     <div class="card card-body">
+      <div class="card card-title">Students</div>
       <table class="table table-sm">
         <thead>
           <tr>
-            <th></th>
             <th>Name</th>
-            <th>Phone</th>
-            <th>Email</th>
             <th>Grade</th>
+            {% if school_check %}
+            <th></th>
+            {% endif %}
           </tr>
         </thead>
         {% for i in page_student.object_list %}
         <tr>
-          <td><a class="btn btn-sm btn-primary" href="{% url 'school' id=i.id %}">View</a></td>
-          <td>{{ i.name }}</td>
-          <td>{{ i.phone }}</td>
-          <td>{{ i.email }}</td>
+          <td><a href="">{{ i.name }}</a></td>
           <td>{{ i.grade }}</td>
+          {% if school_check %}
+          <td><a class="btn btn-sm btn-danger" href="{% url 'school' id=i.id %}">Delete</a></td>
+          {% endif %}
         </tr>
         {% endfor %}
       </table>
-      <ul class="pagination justify-content-center">
+      <ul class="pagination justify-content-center d-flex flex-md-row flex-column">
         {% if page_student.has_previous %}
-        <li class="page-item"><a href="{% my_url value=1 field_name='page_student' urlencode=request.GET.urlencode %}" class="page-link">First</a></li>
-        <li class="page-item"><a href="{% my_url value=page_student.previous_page_number field_name='page_student' urlencode=request.GET.urlencode %}" class="page-link">Previous</a></li>
+        <li class="page-item d-flex flex-row-2"><a href="{% my_url value=1 field_name='page_student' urlencode=request.GET.urlencode %}" class="page-link">First</a></li>
+        <li class="page-item row-2"><a href="{% my_url value=page_student.previous_page_number field_name='page_student' urlencode=request.GET.urlencode %}" class="page-link">Previous</a></li>
         {% else %}
         <li class="disabled page-item"><a href="" class="page-link">First</a></li>
-          <li class="disabled page-item"><a href="" class="page-link">Previous</a></li>
+        <li class="disabled page-item"><a href="" class="page-link">Previous</a></li>
         {% endif %}
         {% for i in page_student_range|default_if_none:page_student.paginator.get_elided_page_range %}
           {% if page_student.number == i %}
@@ -113,21 +133,26 @@
   </div>
   <div class="col-md">
     <div class="card card-body">
+      <div class="card card-title">Teachers</div>
       <table class="table table-sm orders-table">
         <tr>
-          <th></th>
           <th>Name</th>
           <th>Grade</th>
+          {% if school_check %}
+          <th></th>
+          {% endif %}
         </tr>
         {% for i in page_teacher.object_list %}
         <tr>
-          <td><a class="btn btn-sm btn-primary" href="{% url 'school' id=i.id %}">View</a></td>
-          <td>{{ i.name }}</td>
+          <td><a href="">{{ i.name }}</a></td>
           <td>{{ i.grade }}</td>
+          {% if school_check %}
+          <td><a class="btn btn-sm btn-danger" href="{% url 'school' id=i.id %}">Delete</a></td>
+          {% endif %}
         </tr>
         {% endfor %}
       </table>
-      <ul class="pagination justify-content-center">
+      <ul class="pagination justify-content-center d-flex flex-md-row flex-column">
         {% if page_teacher.has_previous %}
         <li class="page-item"><a href="{% my_url value=1 field_name='page_teacher' urlencode=request.GET.urlencode %}" class="page-link">First</a></li>
         <li class="page-item"><a href="{% my_url value=page_teacher.previous_page_number field_name='page_teacher' urlencode=request.GET.urlencode %}" class="page-link">Previous</a></li>
@@ -166,19 +191,19 @@
 <div class="card card-body">
   <table class="table table-sm orders-table">
     <tr>
-      <th></th>
       <th>Name</th>
       <th>Designation</th>
-      <th>Phone</th>
-      <th>Email</th>
+      {% if school_check %}
+      <th></th>
+      {% endif %}
     </tr>
     {% for i in nstaff %}
     <tr>
-      <td><a class="btn btn-sm btn-primary" href="{% url 'school' id=i.id %}">View</a></td>
-      <td>{{ i.name }}</td>
+      <td><a href="">{{ i.name }}</a></td>
       <td>{{ i.designation }}</td>
-      <td>{{ i.phone }}</td>
-      <td>{{ i.email }}</td>
+      {% if school_check %}
+      <td><a class="btn btn-sm btn-danger" href="{% url 'school' id=i.id %}">Delete</a></td>
+      {% endif %}
     </tr>
     {% endfor %}
   </table>
