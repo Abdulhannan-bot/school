@@ -68,8 +68,9 @@ class NonStaff(models.Model):
   designation = models.CharField(max_length = 20, null = True, choices = DESIGNATION)
 
 class Remarks(models.Model):
-  user = models.ForeignKey(Group, null = True, on_delete = models.CASCADE)
-  remarks_on = models.ForeignKey(Student, null = True, on_delete = models.CASCADE)
+  # user = models.ForeignKey(Group, null = True, on_delete = models.CASCADE)
+  student = models.ForeignKey(Student, null = True, on_delete = models.CASCADE)
+  remarks = models.CharField(max_length = 200, null = True)
   
 
 def create_user(sender, instance, created, **kwargs):

@@ -28,4 +28,11 @@ class NonStaffAdmin(admin.ModelAdmin):
 
 admin.site.register(NonStaff, NonStaffAdmin)
 
+# class RemarksAdmin(admin.ModelAdmin):
+#   list_display = ['student']
+#   search_fields = ['students']
+
+admin.site.register(Remarks)
+
+
 

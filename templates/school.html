@@ -40,7 +40,11 @@
     <div class="card card-body">
       <h3 class="text-center">{{ school.name }}</h3>
       <hr>
+      {% if request.user.school.profile_pic %}
       <img class="profile-pic" src="{{ request.user.school.profile_pic.url }}">
+      {% else %}
+      <img class="profile-pic" src="">
+      {% endif %}
     </div>
   </div>
 </div>
@@ -129,8 +133,9 @@
         <li class="disabled page-item"><a href="" class="page-link">Last</a></li>
         {% endif %}
       </ul>
+      {% if school_check %}
       <p><a class="btn btn-sm btn-primary" href="{% url 'add-student' id=school.id %}">Add</a></p>
-      
+      {% endif %}
     </div>
   </div>
   <div class="col-md">
@@ -149,7 +154,7 @@
           <td><a href="">{{ i.name }}</a></td>
           <td>{{ i.grade }}</td>
           {% if school_check %}
-          <td><a class="btn btn-sm btn-danger" href="{% url 'school' id=i.id %}">Delete</a></td>
+          <td><a class="btn btn-sm btn-danger" href="{% url 'delete-teacher' id=i.id %}">Delete</a></td>
           {% endif %}
         </tr>
         {% endfor %}
@@ -182,8 +187,9 @@
         <li class="disabled page-item"><a href="" class="page-link">Last</a></li>
         {% endif %}
       </ul>
-    
-      
+      {% if school_check %}
+      <p><a class="btn btn-sm btn-primary" href="{% url 'add-teacher' id=school.id %}">Add</a></p>
+      {% endif %}
     </div>
   </div>
 </div>
@@ -204,11 +210,14 @@
       <td><a href="">{{ i.name }}</a></td>
       <td>{{ i.designation }}</td>
       {% if school_check %}
-      <td><a class="btn btn-sm btn-danger" href="{% url 'school' id=i.id %}">Delete</a></td>
+      <td><a class="btn btn-sm btn-danger" href="{% url 'delete-nstaff' id=i.id %}">Delete</a></td>
       {% endif %}
     </tr>
     {% endfor %}
   </table>
+  {% if school_check %}
+  <p><a class="btn btn-sm btn-primary" href="{% url 'add-nstaff' id=school.id %}">Add</a></p>
+  {% endif %}
 </div>
 
 

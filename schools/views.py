@@ -202,6 +202,8 @@ def logout_trigger(request):
   logout(request)
   return redirect('login')
 
+@login_required(login_url = 'login')
+@allowed_users(allowed_roles = ['school'])
 def update_student(request, id):
   student = Student.objects.get(id = id)
   school = request.user.student.school
@@ -219,7 +221,8 @@ def update_student(request, id):
   }
   return render(request, "update.html", context = context) 
 
-
+@login_required(login_url = 'login')
+@allowed_users(allowed_roles = ['school'])
 def update_teacher(request, id):
   teacher = Teacher.objects.get(id = id)
   school = request.user.teacher.school
@@ -237,7 +240,8 @@ def update_teacher(request, id):
   }
   return render(request, "update.html", context = context) 
 
-
+@login_required(login_url = 'login')
+@allowed_users(allowed_roles = ['school'])
 def update_nstaff(request, id):
   nstaff = NonStaff.objects.get(id = id)
   school = request.user.nonstaff.school
@@ -255,6 +259,8 @@ def update_nstaff(request, id):
   }
   return render(request, "update.html", context = context) 
 
+@login_required(login_url = 'login')
+@allowed_users(allowed_roles = ['school'])
 def update_school(request, id):
   school = School.objects.get(id = id)
   form = UpdateSchoolForm(instance = school)
@@ -262,7 +268,6 @@ def update_school(request, id):
     form = UpdateSchoolForm(request.POST, request.FILES, instance = school)
     if form.is_valid():
       form.save()
-      
       return redirect('/')
   print(f'name - {request.user.groups.all()[0].name}')
   context = {
@@ -272,26 +277,74 @@ def update_school(request, id):
   }
   return render(request, "update.html", context = context) 
 
+@login_required(login_url = 'login')
+@allowed_users(allowed_roles = ['school'])
 def delete_student(request, id):
   Student.objects.get(id = id).delete()
   return redirect('/')
 
+@login_required(login_url = 'login')
+@allowed_users(allowed_roles = ['school'])
 def delete_teacher(request, id):
   Teacher.objects.get(id = id).delete()
   return redirect('/')
 
+@login_required(login_url = 'login')
+@allowed_users(allowed_roles = ['school'])
 def delete_nstaff(request, id):
   NonStaff.objects.get(id = id).delete()
   return redirect('/')
 
+
+@login_required(login_url = 'login')
+@allowed_users(allowed_roles = ['school'])
 def add_student(request,id):
 
-  OrderFormset = inlineformset_factory(School, Student, fields=('name','grade'), extra=5)
+  StudentFormset = inlineformset_factory(School, Student, fields=('name','email','phone','grade'), extra=5)
   school = School.objects.get(id = id)
-  formset = OrderFormset(queryset = Student.objects.none(), instance=school) 
+  formset = StudentFormset(queryset = Student.objects.none(), instance=school) 
   # form = OrderForm(initial={'customer':customer})
   if request.method == 'POST':
-    formset = OrderFormset(request.POST, instance=school)
+    formset = StudentFormset(request.POST, instance=school)
+    # form = OrderForm(request.POST)
+    if formset.is_valid():
+      formset.save()
+      return redirect('/')
+  context = {
+    "school": school,
+    "formset": formset,
+  }
+  return render(request, "add-student.html", context = context)
+
+@login_required(login_url = 'login')
+@allowed_users(allowed_roles = ['school'])
+def add_teacher(request,id):
+
+  TeacherFormset = inlineformset_factory(School, Teacher, fields=('name','email','phone','grade'), extra=5)
+  school = School.objects.get(id = id)
+  formset = TeacherFormset(queryset = Teacher.objects.none(), instance=school) 
+  # form = OrderForm(initial={'customer':customer})
+  if request.method == 'POST':
+    formset = TeacherFormset(request.POST, instance=school)
+    # form = OrderForm(request.POST)
+    if formset.is_valid():
+      formset.save()
+      return redirect('/')
+  context = {
+    "school": school,
+    "formset": formset,
+  }
+  return render(request, "add-student.html", context = context)
+
+@login_required(login_url = 'login')
+@allowed_users(allowed_roles = ['school'])
+def add_nstaff(request,id):
+  NstaffFormset = inlineformset_factory(School, NonStaff, fields=('name','email','phone','designation'), extra=5)
+  school = School.objects.get(id = id)
+  formset = NstaffFormset(queryset = NonStaff.objects.none(), instance=school) 
+  # form = OrderForm(initial={'customer':customer})
+  if request.method == 'POST':
+    formset = NstaffFormset(request.POST, instance=school)
     # form = OrderForm(request.POST)
     if formset.is_valid():
       formset.save()
