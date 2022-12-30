@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User, Group
 from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 # Create your models here.
 
@@ -23,7 +24,7 @@ class School(models.Model):
   name = models.CharField(max_length = 50, null = True, blank = True)
   phone = models.CharField(max_length = 20, null=True)
   email = models.CharField(max_length = 50, null=True)
-  profile_pic = models.ImageField(default="", upload_to = 'media/', null=True, blank=True)
+  profile_pic = models.ImageField(default="img1.jpg", null=True, blank=True)
 
   def __str__(self):
     return str(self.name)
@@ -41,7 +42,6 @@ class Teacher(models.Model):
     return str(self.school)+" - teacher"
   
 class Student(models.Model):
-  # print(School.objects.get(user = "school_user-wisdon-international-school").all())
   user = models.OneToOneField(User, null = True, blank = True, on_delete = models.CASCADE)
   name = models.CharField(max_length = 50, null = True, blank = True)
   phone = models.CharField(max_length = 20, null=True)
@@ -78,14 +78,18 @@ def create_user(sender, instance, created, **kwargs):
     name = name[0].upper()+name[1:]
     return name
 
-  def group_adder(name,str,group_name,Class):
+  def group_adder(name,str,group_name,Class, school_check = False):
+    name_clone = name
     name = name.replace(str,"")
     name = list(map(make_title,name.split("-")))
     name = " ".join(name)
-    Class.objects.create(user = instance, name = name)
+    if(Class.objects.filter(name = name).exists):
+      Class.objects.filter(name = name).update(user = User.objects.get(username = name_clone))
+    else:
+      Class.objects.create(user = instance, name = name)
     group = Group.objects.get(name = group_name)
     instance.groups.add(group)
-
+  
   def check_username(name):
     if name.startswith("std_user-"):
       group_adder(name,"std_user-","student",Student)
@@ -101,3 +105,26 @@ def create_user(sender, instance, created, **kwargs):
     check_username(name)
 
 post_save.connect(create_user, sender = User)
+
+
+@receiver(post_save, sender = Student)
+@receiver(post_save, sender = Teacher)
+@receiver(post_save, sender = NonStaff)
+@receiver(post_save, sender = School)
+def user_create(sender, instance, created, **kwargs):
+  def generate(str):
+    name = instance.name
+    name = name.lower().split(" ")
+    name = "-".join(name)
+    User.objects.create(username = f'{str}-{name}')
+  if(created and sender == Student):
+    generate('std_user')
+  elif(created and sender == Teacher):
+    generate('staff_user')
+  elif(created and sender == NonStaff):
+    generate('nstaff_user')
+  elif(created and sender == School):
+    generate('school_user')
+    
+
+    # sender.objects.get(name = name).user = User.objects.create(username = 'std_user-'+name1)

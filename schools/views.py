@@ -263,7 +263,7 @@ def update_school(request, id):
     if form.is_valid():
       form.save()
       
-      return redirect('school', id=id )
+      return redirect('/')
   print(f'name - {request.user.groups.all()[0].name}')
   context = {
     "form": form,
@@ -271,3 +271,33 @@ def update_school(request, id):
     "school": school,
   }
   return render(request, "update.html", context = context) 
+
+def delete_student(request, id):
+  Student.objects.get(id = id).delete()
+  return redirect('/')
+
+def delete_teacher(request, id):
+  Teacher.objects.get(id = id).delete()
+  return redirect('/')
+
+def delete_nstaff(request, id):
+  NonStaff.objects.get(id = id).delete()
+  return redirect('/')
+
+def add_student(request,id):
+
+  OrderFormset = inlineformset_factory(School, Student, fields=('name','grade'), extra=5)
+  school = School.objects.get(id = id)
+  formset = OrderFormset(queryset = Student.objects.none(), instance=school) 
+  # form = OrderForm(initial={'customer':customer})
+  if request.method == 'POST':
+    formset = OrderFormset(request.POST, instance=school)
+    # form = OrderForm(request.POST)
+    if formset.is_valid():
+      formset.save()
+      return redirect('/')
+  context = {
+    "school": school,
+    "formset": formset,
+  }
+  return render(request, "add-student.html", context = context)

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block aside %}
+<li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'school' id=school.id %}" aria-expanded="false"><i class="far fa-lightbulb"></i><span class="hide-menu">Home</span></a></li>
+{% if log == 'student' %}
+<li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'update-student' id=id %}" aria-expanded="false"><i class="far fa-lightbulb"></i><span class="hide-menu">Settings</span></a></li>
+{% elif log == 'teacher' %}
+<li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'update-teacher' id=id %}" aria-expanded="false"><i class="far fa-lightbulb"></i><span class="hide-menu">Settings</span></a></li>
+{% elif log == 'non-staff' %}
+<li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'update-nstaff' id=id %}" aria-expanded="false"><i class="far fa-lightbulb"></i><span class="hide-menu">Settings</span></a></li>
+{% endif %}
+{% endblock %}
+{% load static %}
+{% block content %}
+<br>
+<div class="row">
+  <div class="col-md-6">
+    <div class="card card-body">
+      <form action="" method="POST">
+        {% csrf_token %}
+        {% if is_form %}
+          {{ form.as_p }}
+        {% else %}
+          {{ formset.management_form }}
+          {% for form in formset %}
+            {{ form }}
+            <hr>
+          {% endfor %}
+        {% endif %}
+
+        <button class="btn-submit" type="submit">Submit</button>
+      </form>
+    </div>
+
+  </div>
+</div>
+<script>
+  const form = document.querySelector("form")
+  const btn = document.querySelector(".btn-submit")
+  form.addEventListener('submit', function(e) {
+    btn.disabled = true;
+  })
+</script>
+{% endblock %}

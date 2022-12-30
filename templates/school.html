@@ -96,7 +96,7 @@
           <td><a href="">{{ i.name }}</a></td>
           <td>{{ i.grade }}</td>
           {% if school_check %}
-          <td><a class="btn btn-sm btn-danger" href="{% url 'school' id=i.id %}">Delete</a></td>
+          <td><a class="btn btn-sm btn-danger" href="{% url 'delete-student' id=i.id %}">Delete</a></td>
           {% endif %}
         </tr>
         {% endfor %}
@@ -129,7 +129,7 @@
         <li class="disabled page-item"><a href="" class="page-link">Last</a></li>
         {% endif %}
       </ul>
-    
+      <p><a class="btn btn-sm btn-primary" href="{% url 'add-student' id=school.id %}">Add</a></p>
       
     </div>
   </div>
