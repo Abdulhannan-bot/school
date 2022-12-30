@@ -67,9 +67,12 @@ class NonStaff(models.Model):
   school = models.ForeignKey(School, null = True, on_delete = models.CASCADE)
   designation = models.CharField(max_length = 20, null = True, choices = DESIGNATION)
 
-class Remarks(models.Model):
+class Remark(models.Model):
   # user = models.ForeignKey(Group, null = True, on_delete = models.CASCADE)
-  student = models.ForeignKey(Student, null = True, on_delete = models.CASCADE)
+  name = models.CharField(max_length = 50, null = True)
+  school = models.ForeignKey(School, null = True, on_delete = models.CASCADE)
+  student = models.CharField(max_length = 50, null = True)
+  grade = models.CharField(max_length = 2, null = True, choices = GRADE)
   remarks = models.CharField(max_length = 200, null = True)
   
 

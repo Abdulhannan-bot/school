@@ -4,6 +4,7 @@ from django.contrib.auth.models import Group, User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.forms import inlineformset_factory
+from django.contrib import messages
 
 # Create your views here.
 from .filters import *
@@ -203,7 +204,7 @@ def logout_trigger(request):
   return redirect('login')
 
 @login_required(login_url = 'login')
-@allowed_users(allowed_roles = ['school'])
+@allowed_users(allowed_roles = ['student'])
 def update_student(request, id):
   student = Student.objects.get(id = id)
   school = request.user.student.school
@@ -222,7 +223,7 @@ def update_student(request, id):
   return render(request, "update.html", context = context) 
 
 @login_required(login_url = 'login')
-@allowed_users(allowed_roles = ['school'])
+@allowed_users(allowed_roles = ['teacher'])
 def update_teacher(request, id):
   teacher = Teacher.objects.get(id = id)
   school = request.user.teacher.school
@@ -241,7 +242,7 @@ def update_teacher(request, id):
   return render(request, "update.html", context = context) 
 
 @login_required(login_url = 'login')
-@allowed_users(allowed_roles = ['school'])
+@allowed_users(allowed_roles = ['non-staff'])
 def update_nstaff(request, id):
   nstaff = NonStaff.objects.get(id = id)
   school = request.user.nonstaff.school
@@ -319,7 +320,6 @@ def add_student(request,id):
 @login_required(login_url = 'login')
 @allowed_users(allowed_roles = ['school'])
 def add_teacher(request,id):
-
   TeacherFormset = inlineformset_factory(School, Teacher, fields=('name','email','phone','grade'), extra=5)
   school = School.objects.get(id = id)
   formset = TeacherFormset(queryset = Teacher.objects.none(), instance=school) 
@@ -354,3 +354,60 @@ def add_nstaff(request,id):
     "formset": formset,
   }
   return render(request, "add-student.html", context = context)
+
+def remarks_view(request, id):
+  RemarkFormset = inlineformset_factory(School, Remark, fields=('name', 'student', 'grade', 'remarks'), extra=1)
+
+  school = School.objects.get(id = id)
+  student = school.student_set.all()
+  teacher = school.teacher_set.all()
+  nstaff = school.nonstaff_set.all()
+  one_list = list(nstaff)+ list(teacher)
+  student_list = list(student)
+  
+  one_list = list(map(lambda x: x.name, one_list))
+  student_list = list(map(lambda x: x.name, student_list))
+
+  print(one_list)
+  print(student_list)
+  
+  print(f'student  -  {list(student)+ list(teacher)}')
+  formset = RemarkFormset(queryset = Remark.objects.none(), instance=school) 
+  
+  if request.method == 'POST':
+    formset = RemarkFormset(request.POST, instance=school)
+    print(formset.cleaned_data)
+    if formset.is_valid():
+      a = 0
+      remark_on = formset.cleaned_data[0].get('student')
+      remark_on_grade = formset.cleaned_data[0].get('grade')
+      remark_by = formset.cleaned_data[0].get('name')
+      print(remark_on_grade)
+      print(request.user.username)
+      if((remark_on is not None and remark_on ) and (remark_by is not None)):
+        for j in student:
+          if (j.name == remark_on) and (j.grade == remark_on_grade) and (remark_by in one_list):
+            a = 1
+            formset.save()
+            return redirect('/')
+      if(a==0):
+        messages.error(request,f'Enter correct details')  
+  log = ""
+  id_num = ""
+  if(request.user.groups.all()[0].name == 'school'):
+    log = request.user.groups.all()[0].name
+
+    school_check = True
+  elif(request.user.groups.all()[0].name == 'teacher'):
+    log = request.user.groups.all()[0].name
+    id_num = request.user.teacher.id
+  elif(request.user.groups.all()[0].name == 'non-staff'):
+    log = request.user.groups.all()[0].name
+    id_num = request.user.nonstaff.id
+  context = {
+    "school": school,
+    "formset": formset,
+    "log": log,
+    "id": id_num,
+  }
+  return render(request, "remarks.html", context = context)

@@ -32,7 +32,7 @@ admin.site.register(NonStaff, NonStaffAdmin)
 #   list_display = ['student']
 #   search_fields = ['students']
 
-admin.site.register(Remarks)
+admin.site.register(Remark)
 
 
 

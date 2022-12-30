@@ -19,4 +19,5 @@ urlpatterns = [
   path("add-student/<str:id>/",add_student, name="add-student"),
   path("add-teacher/<str:id>/",add_teacher, name="add-teacher"),
   path("add-nstaff/<str:id>/",add_nstaff, name="add-nstaff"),
+  path("remarks/<str:id>/", remarks_view, name="remarks"),
 ]

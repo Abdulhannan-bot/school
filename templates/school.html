@@ -17,6 +17,7 @@
 <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'update-teacher' id=id %}" aria-expanded="false"><i class="far fa-lightbulb"></i><span class="hide-menu">Settings</span></a></li>
 {% elif log == 'non-staff' %}
 <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'update-nstaff' id=id %}" aria-expanded="false"><i class="far fa-lightbulb"></i><span class="hide-menu">Settings</span></a></li>
+
 {% endif %}
 {% endif %}
 {% endblock %}
