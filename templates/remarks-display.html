@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block aside %}
+{% include "navbar.html" %}
+{% endblock %}
+{% load static %}
+
+{% block content %}
+{% load school_extras %}
+<div class="card card-body">
+  <div class="card card-title">Remarks</div>
+  <table class="table table-sm orders-table">
+    <tr>
+      <th>Remark By</th>
+      <th>Student</th>
+      <th>Grade</th>
+      <th>Remark</th>
+    </tr>
+    {% for i in page.object_list %}
+    <tr>
+      <td><a href="">{{ i.name }}</a></td>
+      <td>{{ i.student }}</td>
+      <td>{{ i.grade }}</td>
+      <td>{{ i.remarks }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  <ul class="pagination justify-content-center d-flex flex-md-row flex-column">
+    {% if page.has_previous %}
+    <li class="page-item"><a href="{% my_url value=1 field_name='page' urlencode=request.GET.urlencode %}" class="page-link">First</a></li>
+    <li class="page-item"><a href="{% my_url value=page.previous_page_number field_name='page' urlencode=request.GET.urlencode %}" class="page-link">Previous</a></li>
+    {% else %}
+    <li class="disabled page-item"><a href="" class="page-link">First</a></li>
+    <li class="disabled page-item"><a href="" class="page-link">Previous</a></li>
+    {% endif %}
+    {% for i in page_range|default_if_none:page.paginator.get_elided_page_range %}
+      {% if page.number == i %}
+        <li class="active page-item"><span class="page-link">{{ i }}</span></li>
+      {% else %}
+        {% if i == page.paginator.ELLIPSIS %}
+          <li class="page-item"><span class="page-link">{{ i }}</span></li>
+        {% else %}
+          <li class="page-items"><a class="page-link" href="{% my_url value=i field_name='page' urlencode=request.GET.urlencode %}">{{ i }}</a></li>
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+
+    {% if page.has_next %}
+    <li class="page-item"><a href="{% my_url value=page.next_page_number field_name='page' urlencode=request.GET.urlencode %}" class="page-link">Next</a></li>
+    <li class="page-item"><a href="{% my_url value=page.paginator.num_pages field_name='page' urlencode=request.GET.urlencode %}" class="page-link">Last</a></li>
+    {% else %}
+    <li class="disabled page-item"><a href="" class="page-link">Next</a></li>
+    <li class="disabled page-item"><a href="" class="page-link">Last</a></li>
+    {% endif %}
+  </ul>
+</div>
+{% endblock %}

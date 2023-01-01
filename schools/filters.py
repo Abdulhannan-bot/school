@@ -32,3 +32,13 @@ class AllnStaffFilter(django_filters.FilterSet):
   class Meta:
     model = NonStaff
     fields = ['name', 'school', 'designation']
+
+class AllRemarksFilter(django_filters.FilterSet):
+  class Meta:
+    model = Remark
+    fields = '__all__'
+
+class StudentRemarksFilter(django_filters.FilterSet):
+  class Meta:
+    model = Remark
+    fields = ['name', 'remarks']

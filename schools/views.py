@@ -29,7 +29,6 @@ def login_page(request):
       elif(request.user.groups.all()[0].name == 'non-staff'):
         return redirect('school',id = request.user.nonstaff.school.id)
       elif(request.user.groups.all()[0].name == 'admin'):
-        print(f'post auth {request.user.groups.all()[0].name}')
         return redirect('home')
       else:
         print('passes through all')
@@ -281,19 +280,22 @@ def update_school(request, id):
 @login_required(login_url = 'login')
 @allowed_users(allowed_roles = ['school'])
 def delete_student(request, id):
-  Student.objects.get(id = id).delete()
+  user = Student.objects.get(id = id).user
+  User.objects.get(username = user).delete()
   return redirect('/')
 
 @login_required(login_url = 'login')
 @allowed_users(allowed_roles = ['school'])
 def delete_teacher(request, id):
-  Teacher.objects.get(id = id).delete()
+  user = Teacher.objects.get(id = id).user
+  User.objects.get(username = user).delete()
   return redirect('/')
 
 @login_required(login_url = 'login')
 @allowed_users(allowed_roles = ['school'])
 def delete_nstaff(request, id):
-  NonStaff.objects.get(id = id).delete()
+  user = NonStaff.objects.get(id = id).user
+  User.objects.get(username = user).delete()
   return redirect('/')
 
 
@@ -355,59 +357,91 @@ def add_nstaff(request,id):
   }
   return render(request, "add-student.html", context = context)
 
-def remarks_view(request, id):
-  RemarkFormset = inlineformset_factory(School, Remark, fields=('name', 'student', 'grade', 'remarks'), extra=1)
 
-  school = School.objects.get(id = id)
-  student = school.student_set.all()
-  teacher = school.teacher_set.all()
-  nstaff = school.nonstaff_set.all()
-  one_list = list(nstaff)+ list(teacher)
-  student_list = list(student)
-  
-  one_list = list(map(lambda x: x.name, one_list))
-  student_list = list(map(lambda x: x.name, student_list))
-
-  print(one_list)
-  print(student_list)
-  
-  print(f'student  -  {list(student)+ list(teacher)}')
-  formset = RemarkFormset(queryset = Remark.objects.none(), instance=school) 
-  
-  if request.method == 'POST':
-    formset = RemarkFormset(request.POST, instance=school)
-    print(formset.cleaned_data)
-    if formset.is_valid():
-      a = 0
-      remark_on = formset.cleaned_data[0].get('student')
-      remark_on_grade = formset.cleaned_data[0].get('grade')
-      remark_by = formset.cleaned_data[0].get('name')
-      print(remark_on_grade)
-      print(request.user.username)
-      if((remark_on is not None and remark_on ) and (remark_by is not None)):
-        for j in student:
-          if (j.name == remark_on) and (j.grade == remark_on_grade) and (remark_by in one_list):
-            a = 1
-            formset.save()
-            return redirect('/')
-      if(a==0):
-        messages.error(request,f'Enter correct details')  
-  log = ""
-  id_num = ""
-  if(request.user.groups.all()[0].name == 'school'):
-    log = request.user.groups.all()[0].name
-
-    school_check = True
-  elif(request.user.groups.all()[0].name == 'teacher'):
-    log = request.user.groups.all()[0].name
+@login_required(login_url = 'login')
+@allowed_users(allowed_roles = ['teacher','non-staff'])
+def remarks_view(request):
+  school = ""
+  if(request.user.groups.all()[0].name == "teacher"):
+    id = request.user.teacher.school.id
+    school = School.objects.get(id = id)
+    remark_by = school.teacher_set.all()
+    log = "teacher"
     id_num = request.user.teacher.id
-  elif(request.user.groups.all()[0].name == 'non-staff'):
-    log = request.user.groups.all()[0].name
+  elif(request.user.groups.all()[0].name == "non-staff"):
+    id = request.user.nonstaff.school.id
+    school = School.objects.get(id = id)
+    remark_by = school.nonstaff_set.all()
+    log = "non-staff"
     id_num = request.user.nonstaff.id
+  student = school.student_set.all()
+  
+
+  RemarksForm = inlineformset_factory(School, Remark, fields=('name','student','grade','remarks'), extra = 1)
+  formset = RemarksForm(queryset = Remark.objects.none(), instance=school)
+
+  if(request.method == 'POST'):
+    formset = RemarksForm(request.POST, instance = school)
+    form_by = formset.cleaned_data[0].get('name')
+    form_on = formset.cleaned_data[0].get('student')
+    form_on_grade = formset.cleaned_data[0].get('grade')
+    for i in student.filter(name = form_on):
+      print(i.name)
+    print(student.filter(name = form_on)[0].grade)
+    if(formset.is_valid()):
+      if(form_by is None or form_on is None or form_on_grade is None):
+        messages.error(request, 'Fill all the fields')
+      elif(student.filter(name = form_on) is None):
+        messages.error(request, f'{form_on} not in databse')
+      elif(remark_by.filter(name = form_by) is None):
+        messages.error(request, f'{form_by} not in database')
+      elif(student.filter(name = form_on)[0].grade != form_on_grade):
+        messages.error(request, f'{form_on} does not belong to grade {form_on_grade}')
+      else:
+        formset.save()
+        return redirect('/')
+    
   context = {
-    "school": school,
     "formset": formset,
     "log": log,
+    "school": school,
     "id": id_num,
   }
+
   return render(request, "remarks.html", context = context)
+    
+        
+def remark_display_view(request):
+  id = ""
+  remarks = Remark.objects.all()
+  context = {}
+  if request.user.groups.all()[0].name=="school":
+    remarks = Remark.objects.all()
+    my_filter = AllRemarksFilter(request.GET, queryset = remarks)
+    log = "school"
+    school = request.user.school
+  
+  if request.user.groups.all()[0].name=="student":
+    remarks = Remark.objects.filter(student = request.user.student.name).filter(grade = request.user.student.grade)
+    my_filter = StudentRemarksFilter(request.GET, queryset = remarks)
+    log = "student"
+    id = request.user.student.id
+    school = request.user.student.school
+
+  remarks_list = my_filter.qs
+
+  paginator = Paginator(remarks_list, 10)
+  page_number = request.GET.get('page',1)
+  page = paginator.get_page(page_number)
+
+
+  context = {
+    "my_filter": my_filter,
+    "paginator_range": paginator.get_elided_page_range(number = page_number),
+    "page": page,
+    "log": log,
+    "school": school,
+    "id": id,
+  }
+
+  return render(request,"remarks-display.html", context = context)

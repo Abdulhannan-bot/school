@@ -11,19 +11,22 @@
 <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'school' id=school.id %}" aria-expanded="false"><i class="far fa-lightbulb"></i><span class="hide-menu">Home</span></a></li>
 {% if log == 'school' %}
 <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'update-school' id=id %}" aria-expanded="false"><i class="far fa-lightbulb"></i><span class="hide-menu">Settings</span></a></li>
+<li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'remarks-display'%}" aria-expanded="false"><i class="far fa-lightbulb"></i><span class="hide-menu">Remarks</span></a></li>
 {% elif log == 'student' %}
 <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'update-student' id=id %}" aria-expanded="false"><i class="far fa-lightbulb"></i><span class="hide-menu">Settings</span></a></li>
+<li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'remarks-display'%}" aria-expanded="false"><i class="far fa-lightbulb"></i><span class="hide-menu">Remarks</span></a></li>
 {% elif log == 'teacher' %}
 <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'update-teacher' id=id %}" aria-expanded="false"><i class="far fa-lightbulb"></i><span class="hide-menu">Settings</span></a></li>
+<li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'remarks' %}" aria-expanded="false"><i class="far fa-lightbulb"></i><span class="hide-menu">Remarks</span></a></li>
 {% elif log == 'non-staff' %}
 <li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'update-nstaff' id=id %}" aria-expanded="false"><i class="far fa-lightbulb"></i><span class="hide-menu">Settings</span></a></li>
-
+<li class="sidebar-item"> <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{% url 'remarks' %}" aria-expanded="false"><i class="far fa-lightbulb"></i><span class="hide-menu">Remarks</span></a></li>
 {% endif %}
 {% endif %}
 {% endblock %}
 
 {% block content %}
-<!-- {% load school_extras %} -->
+{% load school_extras %}
 <style>
   .profile-pic {
     width: 8rem;
@@ -41,8 +44,8 @@
     <div class="card card-body">
       <h3 class="text-center">{{ school.name }}</h3>
       <hr>
-      {% if request.user.school.profile_pic %}
-      <img class="profile-pic" src="{{ request.user.school.profile_pic.url }}">
+      {% if school.profile_pic %}
+      <img class="profile-pic" src="{{ school.profile_pic.url }}">
       {% else %}
       <img class="profile-pic" src="">
       {% endif %}

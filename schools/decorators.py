@@ -4,11 +4,15 @@ from django.shortcuts import redirect
 def unauthenticated_user(view_function):
   def wrapper_function(request, *args, **kwargs):
     if request.user.is_authenticated:
-      if(request.user.groups.all()[0].name in ['school','teacher','student','non-staff']):
-        print(f'post auth {request.user.groups.all()[0].name}')
+      if(request.user.groups.all()[0].name == "teacher"):
+        return redirect('school',id = request.user.teacher.school.id)
+      elif(request.user.groups.all()[0].name == "student"):
+        return redirect('school',id = request.user.student.school.id)
+      elif(request.user.groups.all()[0].name == "non-staff"):
+        return redirect('school',id = request.user.nonstaff.school.id)
+      elif(request.user.groups.all()[0].name == "school"):
         return redirect('school',id = request.user.school.id)
       elif (request.user.groups.all()[0].name == 'admin'):
-        print(f'post auth {request.user.groups.all()[0].name}')
         return redirect('home')
       else:
         print('passes through all')
