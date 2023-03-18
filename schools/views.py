@@ -416,7 +416,8 @@ def remark_display_view(request):
   remarks = Remark.objects.all()
   context = {}
   if request.user.groups.all()[0].name=="school":
-    remarks = Remark.objects.all()
+
+    remarks = Remark.objects.filter(school = request.user.school.id)
     my_filter = AllRemarksFilter(request.GET, queryset = remarks)
     log = "school"
     school = request.user.school
